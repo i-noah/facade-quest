@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const service = axios.create({
-  baseURL: `${window.location.protocol}//${window.location.hostname}:3012`,
+  baseURL: `/`,
   timeout: 5000,
   // adapter: require("axios/lib/adapters/http"),
 });
