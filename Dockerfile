@@ -1,4 +1,4 @@
-FROM node:12.18.3-alpine AS builder
+FROM node:14.18.2-alpine AS builder
 
 WORKDIR /svr/app
 COPY . .
@@ -7,7 +7,7 @@ RUN yarn
 ENV NODE_ENV production
 RUN yarn build
 
-FROM node:12.18.3-alpine
+FROM node:14.18.2-alpine
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk add --no-cache tzdata \
     && cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
