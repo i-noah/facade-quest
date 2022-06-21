@@ -1,18 +1,13 @@
 import {
-  Stack,
-  Paper,
-  Divider,
-  Grid,
-  Avatar,
   Dialog,
+  DialogContent,
   DialogTitle,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
+  Grid,
+  Paper,
+  Typography,
 } from "@mui/material";
-import { blue } from "@mui/material/colors";
 import { styled } from "@mui/material/styles";
+import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import service from "../common/service";
@@ -54,6 +49,10 @@ export const HomePage = () => {
     QuestGroupProcessItem[]
   >([]);
 
+  const selectedGroupItem = questGroupProcess.find(
+    (item) => item.id === selectedGroup
+  );
+
   useEffect(() => {
     service
       .get<QuestGroupProcessItem[]>("/api/dataset/group")
@@ -63,13 +62,17 @@ export const HomePage = () => {
   return (
     <>
       <Grid sx={{ my: 3 }}>Hello, {auth.user}</Grid>
-      <Grid container spacing={2}>
+      <Grid
+        container
+        spacing={2}
+        style={{ height: "90%", overflow: "scroll", padding: "6px" }}
+      >
         {questGroupProcess.map((item, i) => (
-          <Grid key={i} item xs={6}>
+          <Grid key={i} item xs={4}>
             <Item
               square
               sx={{ position: "relative" }}
-              onClick={() => handleClickOpen(item.name)}
+              onClick={() => handleClickOpen(item.id)}
             >
               <div>{item.name}</div>
               <div>
@@ -92,6 +95,7 @@ export const HomePage = () => {
         ))}
       </Grid>
       <SimpleDialog
+        item={selectedGroupItem}
         selectedValue={selectedValue}
         open={open}
         onClose={handleClose}
@@ -101,13 +105,14 @@ export const HomePage = () => {
 };
 
 export interface SimpleDialogProps {
+  item?: QuestGroupProcessItem;
   open: boolean;
   selectedValue: number;
   onClose: (value: number) => void;
 }
 
 function SimpleDialog(props: SimpleDialogProps) {
-  const { onClose, selectedValue, open } = props;
+  const { onClose, item, open } = props;
 
   const handleClose = () => {
     onClose(-1);
@@ -117,23 +122,45 @@ function SimpleDialog(props: SimpleDialogProps) {
     onClose(value);
   };
 
+  if (!item) return null;
+
   return (
     <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>选择数量</DialogTitle>
-      <Grid container spacing={2} sx={{ p: 3 }}>
-        {cnts.map((cnt) => (
-          <Grid key={cnt} item xs={6}>
-            <Item sx={{ height: 40 }} onClick={() => handleListItemClick(cnt)}>
-              {cnt}个
+      <DialogTitle>{item.title}</DialogTitle>
+      <DialogContent>
+        <Box sx={{ pb: 2 }}>问题</Box>
+        <Box sx={{ pb: 2 }}>
+          <Typography variant="subtitle2">
+            {item.question}{" "}
+            {item.help && item.help.startsWith("https://") && (
+              <a href={item.help} target="_blank">
+                查看帮助
+              </a>
+            )}
+          </Typography>
+          <Typography variant="caption">
+            ⚠️注意：请先搞明白问题再作答。
+          </Typography>
+        </Box>
+        <Box sx={{ pb: 2 }}>选择数量</Box>
+        <Grid container spacing={2}>
+          {cnts.map((cnt) => (
+            <Grid key={cnt} item xs={6}>
+              <Item
+                sx={{ height: 40 }}
+                onClick={() => handleListItemClick(cnt)}
+              >
+                {cnt}个
+              </Item>
+            </Grid>
+          ))}
+          <Grid item xs={6}>
+            <Item sx={{ height: 40 }} onClick={() => handleListItemClick(-1)}>
+              先不做了
             </Item>
           </Grid>
-        ))}
-        <Grid item xs={6}>
-          <Item sx={{ height: 40 }} onClick={() => handleListItemClick(-1)}>
-            先不做了
-          </Item>
         </Grid>
-      </Grid>
+      </DialogContent>
     </Dialog>
   );
 }

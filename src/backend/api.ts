@@ -1,5 +1,5 @@
 import express from "express";
-import db, { manifest, quests, regroupImageDataset } from "./database";
+import db, { manifest, quests } from "./database";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { secret } from "./config";
@@ -118,38 +118,42 @@ router.post("/quest/list", async (req, res) => {
   }
 });
 
-router.get("/quest/next/:group/:cnt", async (req, res) => {
+router.get("/quest/next/:id/:cnt", async (req, res) => {
   try {
-    let { cnt, group } = req.params;
+    if (!req.token) throw new Error("token invalid");
+    const detoken = jwt.verify(req.token, secret) as any;
+    let { cnt, id } = req.params;
     try {
       parseInt(cnt);
     } catch {
       throw new Error(`cnt ${cnt} failed to  parse int`);
     }
-    if (!regroupImageDataset[group])
-      throw new Error(`group ${group} not existed`);
-    const imgs = regroupImageDataset[group];
+
+    const quest = quests.find((item) => item.id.toString() === id);
+
+    if (!quest) throw new Error("quest not found");
+
     const nextQuests: QuestItem[] = [];
 
-    for (const quest of quests.sort(() => (Math.random() > 0.5 ? -1 : 1))) {
-      for (const img of imgs.sort(() => (Math.random() > 0.5 ? -1 : 1))) {
-        const questRecords = await db<QuestRecord>("quests")
-          .select("answer", "qid")
-          .where({ uuid: img.id });
+    const questRecords = (
+      await db<QuestRecord>("quests")
+        .select("uuid")
+        .where({ uid: detoken.id, qid: id })
+    ).map((item) => item.uuid);
 
-        const rec = questRecords.find((item) => item.qid === quest.id);
-        if (rec && rec.answer) continue;
-        if (nextQuests.length >= parseInt(cnt)) continue;
+    manifest
+      .filter((item) => !questRecords.includes(item.data.id))
+      .forEach((item) => {
+        if (nextQuests.length >= parseInt(cnt)) return;
         nextQuests.push({
-          qid: quest.id,
-          uuid: img.id,
+          qid: id,
+          uuid: item.data.id,
           quest: quest.question,
-          image: img.image,
+          image: item.data.image,
         });
-      }
-    }
+      });
 
-    res.status(200).send(nextQuests.sort(() => (Math.random() > 0.5 ? -1 : 1)));
+    res.status(200).send(nextQuests.sort(randomSort));
   } catch (e) {
     assertIsError(e);
     res.status(400).send({ auth: false, error: e.message });
@@ -159,20 +163,17 @@ router.get("/quest/next/:group/:cnt", async (req, res) => {
 router.get("/dataset/group", async (req, res) => {
   try {
     if (!req.token) throw new Error("token invalid");
-    const group: QuestGroupProcessItem[] = [];
-
-    Object.keys(regroupImageDataset).forEach((gp) => {
-      group.push({
-        name: gp,
-        cnt: regroupImageDataset[gp].length * quests.length,
-        rest: regroupImageDataset[gp].length * quests.length,
-      });
-    });
+    const group: QuestGroupProcessItem[] = quests.map((item) => ({
+      name: item.title,
+      cnt: manifest.length,
+      rest: manifest.length,
+      ...item,
+    }));
 
     for (const gp of group) {
       const row = await db<QuestRecord>("quests")
         .select("group", "answer")
-        .where("group", gp.name);
+        .where("qid", gp.id);
 
       gp.rest -= row.length;
     }
@@ -185,3 +186,7 @@ router.get("/dataset/group", async (req, res) => {
 });
 
 export default router;
+
+function randomSort() {
+  return Math.random() > 0.5 ? -1 : 1;
+}

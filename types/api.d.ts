@@ -8,9 +8,11 @@ declare type ImageDataManifest = { data: ImageDataSetItem }[];
 
 declare interface ImageQuestItem {
   id: string;
+  title: string;
   question: string;
   label: string;
   value: string;
+  help: string;
 }
 
 declare interface UserRecord {
@@ -21,14 +23,24 @@ declare interface UserRecord {
 
 declare interface QuestRecord {
   id: number;
+  /**
+   * image id
+   */
   uuid: string;
+  /**
+   * user id
+   */
   uid: number;
   group: string;
+  /**
+   * quest id
+   */
   qid: string;
   answer: string;
 }
 
-declare interface QuestGroupProcessItem {
+declare interface QuestGroupProcessItem extends ImageQuestItem {
+  id: string;
   name: string;
   cnt: number;
   rest: number;
