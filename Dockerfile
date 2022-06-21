@@ -22,4 +22,4 @@ ENV HOST=0.0.0.0
 ENV PORT=3012
 
 EXPOSE 3012
-CMD [ "node", "backend" ]
+CMD [ "node", "dist/backend" ]
