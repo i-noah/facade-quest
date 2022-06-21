@@ -1,0 +1,89 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  color: whitesmoke;
+  background: #282c34;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.App {
+  height: 100vh;
+  padding: 16px;
+}
+
+.question {
+  height: 72px;
+}
+
+.swipe-container {
+  position: relative;
+  z-index: 1;
+  width: calc(100%);
+  height: calc(100% - 16px - 16px - 48px - 72px - 120px);
+  /* min-width: 300px;
+  max-width: 600px; */
+}
+
+.swipe {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.cardContainer {
+  width: 90vw;
+  max-width: 260px;
+  height: 300px;
+}
+
+.card {
+  position: relative;
+  background-color: #fff;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.btn-group {
+  position: absolute;
+  bottom: 32px;
+  left: 64px;
+  width: calc(100% - 128px);
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  width: 48px;
+  height: 48px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.btn svg {
+  width: 32px;
+  height: 32px;
+  padding: 8px;
+}
+
+.dir-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 16px;
+  transition: all 0.3s ease-in-out;
+  z-index: -1;
+}
