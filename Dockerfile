@@ -13,7 +13,10 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 WORKDIR /svr/app
-COPY --from=builder /svr/app/dist .
+COPY --from=builder /svr/app/dist ./dist
+COPY ./package.json ./package.json
+COPY ./yarn.lock ./yarn.lock
+COPY ./.npmrc ./.npmrc
 
 ENV HOST=0.0.0.0
 ENV PORT=3012
