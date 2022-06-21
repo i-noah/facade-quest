@@ -18,6 +18,9 @@ COPY ./package.json ./package.json
 COPY ./yarn.lock ./yarn.lock
 COPY ./.npmrc ./.npmrc
 
+RUN yarn
+
+ENV NODE_ENV production
 ENV HOST=0.0.0.0
 ENV PORT=3012
 
