@@ -163,6 +163,7 @@ router.get("/quest/next/:id/:cnt", async (req, res) => {
 router.get("/dataset/group", async (req, res) => {
   try {
     if (!req.token) throw new Error("token invalid");
+    const detoken = jwt.verify(req.token, secret) as any;
     const group: QuestGroupProcessItem[] = quests.map((item) => ({
       name: item.title,
       cnt: manifest.length,
@@ -173,7 +174,8 @@ router.get("/dataset/group", async (req, res) => {
     for (const gp of group) {
       const row = await db<QuestRecord>("quests")
         .select("group", "answer")
-        .where("qid", gp.id);
+        .where("qid", gp.id)
+        .andWhere("uid", detoken.id);
 
       gp.rest -= row.length;
     }
