@@ -22,8 +22,6 @@ const Item = styled(Paper)(({ theme }) => ({
   height: 60,
 }));
 
-const cnts = [50, 100, 150, 200, 250, 300];
-
 export const HomePage = () => {
   const auth = useAuth();
   const nav = useNavigate();
@@ -65,7 +63,7 @@ export const HomePage = () => {
       <Grid
         container
         spacing={2}
-        style={{ height: "90%", overflow: "scroll", padding: "6px" }}
+        style={{ height: "90%", overflowY: "scroll", padding: "6px" }}
       >
         {questGroupProcess.map((item, i) => (
           <Grid key={i} item xs={4}>
@@ -144,16 +142,11 @@ function SimpleDialog(props: SimpleDialogProps) {
         </Box>
         <Box sx={{ pb: 2 }}>选择数量</Box>
         <Grid container spacing={2}>
-          {cnts.map((cnt) => (
-            <Grid key={cnt} item xs={6}>
-              <Item
-                sx={{ height: 40 }}
-                onClick={() => handleListItemClick(cnt)}
-              >
-                {cnt}个
-              </Item>
-            </Grid>
-          ))}
+          <Grid item xs={6}>
+            <Item sx={{ height: 40 }} onClick={() => handleListItemClick(50)}>
+              开始
+            </Item>
+          </Grid>
           <Grid item xs={6}>
             <Item sx={{ height: 40 }} onClick={() => handleListItemClick(-1)}>
               先不做了
