@@ -100,7 +100,13 @@ export const QuestPage = () => {
     if (currentIndex === -1 && uploadTimeLeft === 0) {
       setUploading(true);
       service
-        .post("/api/quest/list", { quests: answer })
+        .post("/api/quest/list", {
+          quests: answer.map((item) => ({
+            qid: item.qid,
+            uuid: item.uuid,
+            answer: item.answer,
+          })),
+        })
         .then(() => {
           setUploading(false);
           setDone(true);
