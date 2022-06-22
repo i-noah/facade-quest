@@ -143,6 +143,7 @@ router.get("/quest/next/:id/:cnt", async (req, res) => {
 
     manifest
       .filter((item) => !questRecords.includes(item.data.id))
+      .sort(randomSort)
       .forEach((item) => {
         if (nextQuests.length >= parseInt(cnt)) return;
         nextQuests.push({
